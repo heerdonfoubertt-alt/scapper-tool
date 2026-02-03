@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Influencer Scraper</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      background: linear-gradient(135deg, #0e1117 0%, #1a1f2e 100%);
+      color: #e6edf3;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      padding: 20px;
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      text-align: center;
+      color: #58a6ff;
+      margin-bottom: 30px;
+      font-size: 2.5em;
+      text-shadow: 0 0 20px rgba(88, 166, 255, 0.3);
+    }
+    
+    .card {
+      background: rgba(22, 27, 34, 0.8);
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #8b949e;
+      font-weight: 500;
+      font-size: 0.9em;
+    }
+    
+    input, select {
+      width: 100%;
+      padding: 12px;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      color: #e6edf3;
+      font-size: 1em;
+      transition: border-color 0.3s;
+    }
+    
+    input:focus, select:focus {
+      outline: none;
+      border-color: #58a6ff;
+    }
+    
+    .checkbox-group {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .checkbox-item input[type="checkbox"] {
+      width: auto;
+      cursor: pointer;
+    }
+    
+    button {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #238636 0%, #2ea043 100%);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1.1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 12px rgba(35, 134, 54, 0.4);
+    }
+    
+    button:hover:not(:disabled) {
+      background: linear-gradient(135deg, #2ea043 0%, #238636 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(35, 134, 54, 0.6);
+    }
+    
+    button:disabled {
+      background: #30363d;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+    
+    .logs-container {
+      background: #000;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 15px;
+      height: 400px;
+      overflow-y: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9em;
+    }
+    
+    .log-line {
+      margin-bottom: 4px;
+      color: #00ff90;
+    }
+    
+    .log-line.error {
+      color: #ff6b6b;
+    }
+    
+    .log-line.info {
+      color: #58a6ff;
+    }
+    
+    .status-badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 0.85em;
+      text-transform: uppercase;
+    }
+    
+    .status-running {
+      background: #1f6feb;
+      color: white;
+    }
+    
+    .status-done {
+      background: #238636;
+      color: white;
+    }
+    
+    .status-error {
+      background: #da3633;
+      color: white;
+    }
+    
+    .files-list {
+      list-style: none;
+      padding: 0;
+    }
+    
+    .file-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      margin-bottom: 8px;
+    }
+    
+    .file-item:hover {
+      background: #161b22;
+    }
+    
+    .download-btn {
+      padding: 6px 12px;
+      background: #58a6ff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9em;
+      width: auto;
+    }
+    
+    .download-btn:hover {
+      background: #1f6feb;
+    }
+    
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎯 Influencer Scraper Multi-Plateformes</h1>
+    
+    <div class="card">
+      <h2 style="margin-bottom: 20px; color: #58a6ff;">⚙️ Configuration de la recherche</h2>
+      
+      <div class="form-group">
+        <label for="keyword">🔍 Mot-clé de recherche</label>
+        <input type="text" id="keyword" placeholder="Ex: voyage, gaming, cuisine..." />
+      </div>
+      
+      <div class="form-group">
+        <label>📱 Plateformes</label>
+        <div class="checkbox-group">
+          <div class="checkbox-item">
+            <input type="checkbox" id="platform-twitch" value="twitch" />
+            <label for="platform-twitch" style="margin: 0;">Twitch</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="platform-youtube" value="youtube" />
+            <label for="platform-youtube" style="margin: 0;">YouTube</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="platform-tiktok" value="tiktok" />
+            <label for="platform-tiktok" style="margin: 0;">TikTok</label>
+          </div>
+        </div>
+      </div>
+      
+      <div class="grid">
+        <div class="form-group">
+          <label for="minFollowersYT">👥 Min abonnés YouTube (0 = pas de limite)</label>
+          <input type="number" id="minFollowersYT" value="0" min="0" />
+        </div>
+        
+        <div class="form-group">
+          <label for="minFollowersTW">👥 Min followers Twitch (0 = pas de limite)</label>
+          <input type="number" id="minFollowersTW" value="0" min="0" />
+        </div>
+        
+        <div class="form-group">
+          <label for="maxResults">📊 Résultats max par plateforme</label>
+          <input type="number" id="maxResults" value="50" min="1" max="100" />
+        </div>
+      </div>
+      
+      <button id="runBtn" onclick="runScraper()">🚀 Lancer la recherche</button>
+    </div>
+    
+    <div class="card">
+      <h2 style="margin-bottom: 15px; color: #58a6ff;">
+        📊 Statut: <span id="status" class="status-badge">En attente</span>
+      </h2>
+      
+      <div class="logs-container" id="logs">
+        <div class="log-line info">Prêt à lancer une recherche...</div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <h2 style="margin-bottom: 15px; color: #58a6ff;">📁 Fichiers CSV générés</h2>
+      <ul class="files-list" id="filesList">
+        <li style="color: #8b949e; text-align: center;">Aucun fichier pour le moment</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    let eventSource = null;
+    
+    function connectLogs() {
+      if (eventSource) eventSource.close();
+      
+      eventSource = new EventSource('/api/logs');
+      
+      eventSource.addEventListener('log', (e) => {
+        const data = JSON.parse(e.data);
+        addLog(data.line);
+      });
+      
+      eventSource.addEventListener('status', (e) => {
+        const data = JSON.parse(e.data);
+        updateStatus(data);
+      });
+      
+      eventSource.addEventListener('done', (e) => {
+        const data = JSON.parse(e.data);
+        addLog(`✅ Fichier créé: ${data.output}`);
+        loadFiles();
+      });
+    }
+    
+    function addLog(line) {
+      const logsDiv = document.getElementById('logs');
+      const logLine = document.createElement('div');
+      logLine.className = 'log-line';
+      
+      if (line.includes('❌') || line.includes('⚠️')) {
+        logLine.className += ' error';
+      } else if (line.includes('🔍') || line.includes('📱')) {
+        logLine.className += ' info';
+      }
+      
+      logLine.textContent = line;
+      logsDiv.appendChild(logLine);
+      logsDiv.scrollTop = logsDiv.scrollHeight;
+    }
+    
+    function updateStatus(job) {
+      const statusEl = document.getElementById('status');
+      const runBtn = document.getElementById('runBtn');
+      
+      if (!job) {
+        statusEl.textContent = 'En attente';
+        statusEl.className = 'status-badge';
+        runBtn.disabled = false;
+        return;
+      }
+      
+      if (job.status === 'running') {
+        statusEl.textContent = 'En cours...';
+        statusEl.className = 'status-badge status-running';
+        runBtn.disabled = true;
+      } else if (job.status === 'done') {
+        statusEl.textContent = 'Terminé';
+        statusEl.className = 'status-badge status-done';
+        runBtn.disabled = false;
+      } else if (job.status === 'error') {
+        statusEl.textContent = 'Erreur';
+        statusEl.className = 'status-badge status-error';
+        runBtn.disabled = false;
+      }
+    }
+    
+    async function runScraper() {
+      const keyword = document.getElementById('keyword').value.trim();
+      
+      if (!keyword) {
+        alert('Veuillez entrer un mot-clé !');
+        return;
+      }
+      
+      const platforms = [];
+      if (document.getElementById('platform-twitch').checked) platforms.push('twitch');
+      if (document.getElementById('platform-youtube').checked) platforms.push('youtube');
+      if (document.getElementById('platform-tiktok').checked) platforms.push('tiktok');
+      
+      if (platforms.length === 0) {
+        alert('Veuillez sélectionner au moins une plateforme !');
+        return;
+      }
+      
+      const minFollowersYT = document.getElementById('minFollowersYT').value;
+      const minFollowersTW = document.getElementById('minFollowersTW').value;
+      const maxResults = document.getElementById('maxResults').value;
+      
+      document.getElementById('logs').innerHTML = '';
+      
+      try {
+        const response = await fetch('/api/run/influencer-scraper', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            keyword,
+            platforms,
+            minFollowersYT,
+            minFollowersTW,
+            maxResults
+          })
+        });
+        
+        const result = await response.json();
+        
+        if (!response.ok) {
+          alert(result.error || 'Erreur lors du lancement');
+        }
+      } catch (err) {
+        alert('Erreur de connexion au serveur');
+      }
+    }
+    
+    async function loadFiles() {
+      try {
+        const response = await fetch('/api/files');
+        const data = await response.json();
+        
+        const filesList = document.getElementById('filesList');
+        
+        if (data.files.length === 0) {
+          filesList.innerHTML = '<li style="color: #8b949e; text-align: center;">Aucun fichier pour le moment</li>';
+          return;
+        }
+        
+        filesList.innerHTML = data.files.map(file => `
+          <li class="file-item">
+            <span>📄 ${file}</span>
+            <button class="download-btn" onclick="downloadFile('${file}')">⬇️ Télécharger</button>
+          </li>
+        `).join('');
+      } catch (err) {
+        console.error('Erreur chargement fichiers:', err);
+      }
+    }
+    
+    function downloadFile(filename) {
+      window.location.href = `/download/${filename}`;
+    }
+    
+    // Initialisation
+    connectLogs();
+    loadFiles();
+    setInterval(loadFiles, 5000);
+  </script>
+</body>
+</html>
